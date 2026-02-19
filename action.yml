@@ -1,41 +1,41 @@
-name: 'Open Source Project Security Baseline Scanner'
-description: 'Run Open Source Project Security Baseline assessments on your GitHub repository'
-author: 'Revanite'
+name: "Open Source Project Security Baseline Scanner"
+description: "Run Open Source Project Security Baseline assessments on your GitHub repository"
+author: "Revanite"
 
 branding:
-  icon: 'shield'
-  color: 'blue'
+  icon: "shield"
+  color: "blue"
 
 inputs:
   owner:
-    description: 'Repository owner (organization or user)'
+    description: "Repository owner (organization or user)"
     required: true
   repo:
-    description: 'Repository name'
+    description: "Repository name"
     required: true
   token:
-    description: 'GitHub Personal Access Token with repo read permissions'
+    description: "GitHub Personal Access Token with repo read permissions"
     required: true
   catalog:
-    description: 'OSPS catalog to assess against'
+    description: "OSPS catalog to assess against"
     required: false
-    default: 'osps-baseline'
+    default: "osps-baseline"
   output-format:
-    description: 'Output format (yaml, json, or sarif)'
+    description: "Output format (yaml, json, or sarif)"
     required: false
-    default: 'yaml'
+    default: "yaml"
   upload-sarif:
-    description: 'Upload results as SARIF to GitHub Security tab. When true, output-format is automatically set to sarif'
+    description: "Upload results as SARIF to GitHub Security tab. When true, output-format is automatically set to sarif"
     required: false
-    default: 'false'
+    default: "false"
 
 outputs:
   results-path:
-    description: 'Path to the evaluation results directory'
-    value: 'evaluation_results'
+    description: "Path to the evaluation results directory"
+    value: "evaluation_results"
 
 runs:
-  using: 'composite'
+  using: "composite"
   steps:
     - name: Create config file
       shell: bash
