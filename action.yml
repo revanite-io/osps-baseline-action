@@ -85,7 +85,7 @@ runs:
         docker run --rm \
           -v /tmp/pvtr-config.yml:/.privateer/config.yml \
           -v ${{ github.workspace }}/evaluation_results:/.privateer/bin/evaluation_results \
-          eddieknight/pvtr-github-repo:latest
+          ghcr.io/ossf/pvtr-github-repo-scanner:latest
 
     - name: Prepare SARIF file for upload
       shell: bash
