@@ -1,0 +1,43 @@
+---
+header:
+  last-reviewed: "2026-02-19"
+  last-updated: "2026-02-19"
+  schema-version: "2.2.0"
+  url: "https://github.com/revanite-io/osps-baseline-action/blob/main/.github/security-insights.yml"
+
+project:
+  name: "osps-baseline-action"
+  homepage: "https://github.com/revanite-io/osps-baseline-action"
+  administrators:
+    - name: "Eddie Knight"
+      primary: true
+      affiliation: "revanite-io"
+    - name: "Jason Meridth"
+      primary: false
+      affiliation: "revanite-io"
+  repositories:
+    - name: "osps-baseline-action"
+      url: "https://github.com/revanite-io/osps-baseline-action"
+  vulnerability-reporting:
+    reports-accepted: true
+    bug-bounty-available: false
+    policy: "https://github.com/revanite-io/osps-baseline-action/security/advisories"
+
+repository:
+  url: "https://github.com/revanite-io/osps-baseline-action"
+  status: "Active"
+  accepts-change-request: true
+  accepts-automated-change-request: true
+  core-team:
+    - name: "Eddie Knight"
+      primary: true
+      affiliation: "Sonatype"
+    - name: "Jason Meridth"
+      primary: false
+      affiliation: "Chainguard"
+  license:
+    expression: "Apache-2.0"
+    url: "https://github.com/revanite-io/osps-baseline-action/blob/main/LICENSE"
+  security:
+    assessments:
+      - comment: "This project is itself an OSPS Baseline assessment tool"

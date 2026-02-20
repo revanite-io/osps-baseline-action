@@ -68,7 +68,8 @@ jobs:
 
 Your GitHub Personal Access Token needs **repository read permissions**. For public repositories, you can use the `repo` scope, or `public_repo` for public repos only. An additional check for multi-factor authentication will run if your token includes `admin:org` permissions.
 
-**Creating a PAT:**
+### Creating a PAT
+
 1. Go to GitHub Settings → Developer settings → Personal access tokens → Tokens (classic)
 2. Generate a new token with `repo` scope (or `public_repo` for public repositories)
 3. Add the token as a secret in your repository (Settings → Secrets and variables → Actions)
@@ -91,13 +92,14 @@ Your GitHub Personal Access Token needs **repository read permissions**. For pub
 **A:** There are several common reasons:
 
 1. **Missing permissions**: Ensure your workflow includes `security-events: write` permission. Organization-level settings may also restrict security event uploads.
-3. **Invalid SARIF format**: The action validates the SARIF file before upload. Check the workflow logs for any errors produced by the plugin
-5. **Plugin crash:** Because of the reliance on API calls to collect data, the plugin occasionally encounters an error and needs to be re-run
-6. **User Permissions**: If you are not authorized to view the security tab, it may have uploaded without your knowlege.
+2. **Invalid SARIF format**: The action validates the SARIF file before upload. Check the workflow logs for any errors produced by the plugin
+3. **Plugin crash:** Because of the reliance on API calls to collect data, the plugin occasionally encounters an error and needs to be re-run
+4. **User Permissions**: If you are not authorized to view the security tab, it may have uploaded without your knowledge.
 
 ### Q: What if I get permission errors when accessing files?
 
 **A:** The action automatically fixes file permissions after the Docker container runs. If you still encounter permission issues:
+
 - Ensure the workflow has write access to the workspace
 - Check that the `evaluation_results` directory is created and writable
 - Review the workflow logs for specific permission error messages
