@@ -160,6 +160,6 @@ This project is licensed under the Apache 2.0 License - see the [LICENSE](LICENS
 
 ## Related Projects
 
-- [Privateer](https://github.com/privateerproj/privateer) - The core assessment engine
+- [Privateer](https://github.com/privateerproj/pvtr) - The core assessment engine
 - [Gemara](https://github.com/ossf/gemara) - OSPS Baseline control definitions
 - [OSPS Baseline](https://baseline.openssf.org) - Open Source Project Security Baseline specification
