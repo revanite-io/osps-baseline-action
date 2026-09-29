@@ -37,7 +37,7 @@ jobs:
         uses: actions/checkout@v6
       
       - name: Open Source Project Security Baseline Scanner
-        uses: revanite-io/osps-baseline-action@v1.3.2
+        uses: revanite-io/osps-baseline-action@v1.5.1
         with:
             owner: ${{ github.repository_owner }}
             repo: ${{ github.event.repository.name }}
@@ -84,7 +84,7 @@ How to choose a compatible value:
 
 **NOTE:** If the catalog does not exist in the scanner version you run, the scan may produce empty results or no parsed control findings.
 
-Examples in this README use the latest tagged action release (`v1.3.2`). For production workflows, pin to a commit SHA for deterministic behavior.
+Examples in this README use the latest tagged action release (`v1.5.1`). For production workflows, pin to a commit SHA for deterministic behavior.
 
 ## Requirements
 
