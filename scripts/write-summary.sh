@@ -7,8 +7,8 @@ set -euo pipefail
 #   OWNER            - Repository owner
 #   REPO             - Repository name
 #   CATALOG          - OSPS catalog name used for the scan
-#   FAIL_ON_ERROR    - "true" to fail the step when any controls failed
 #   GITHUB_STEP_SUMMARY - Path to the GitHub step summary file
+#   GITHUB_OUTPUT    - Path to the GitHub step output file
 #   RESULTS_DIR      - Path to the evaluation_results directory (default: evaluation_results)
 
 RESULTS_DIR="${RESULTS_DIR:-evaluation_results}"
@@ -101,8 +101,6 @@ echo "$CONTROL_LINES" | while IFS= read -r line; do
   fi
 done
 
-# Fail the step if there are failed controls and fail-on-error is enabled
-if [ "$FAIL_ON_ERROR" = "true" ] && [ "$FAILED" -gt 0 ]; then
-  echo "::error::OSPS Baseline assessment found ${FAILED} failed control(s)"
-  exit 1
-fi
+# Expose the failed count so a later step can apply fail-on-error after the
+# SARIF upload has run
+echo "failed=${FAILED}" >> "$GITHUB_OUTPUT"

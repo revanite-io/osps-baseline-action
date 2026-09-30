@@ -97,11 +97,11 @@ runs:
 
     - name: Write results to workflow summary
       shell: bash
+      id: summary
       env:
         OWNER: ${{ inputs.owner }}
         REPO: ${{ inputs.repo }}
         CATALOG: ${{ inputs.catalog }}
-        FAIL_ON_ERROR: ${{ inputs.fail-on-error }}
         RESULTS_DIR: evaluation_results
       run: bash ${{ github.action_path }}/scripts/write-summary.sh
 
@@ -121,6 +121,19 @@ runs:
         sarif_file: ${{ steps.sarif.outputs.sarif_file }}
         wait-for-processing: true
       continue-on-error: true
+
+    # Runs after the SARIF upload so failed controls reach the Security tab
+    # before the job fails
+    - name: Fail if controls failed
+      shell: bash
+      if: inputs.fail-on-error == 'true'
+      env:
+        FAILED: ${{ steps.summary.outputs.failed }}
+      run: |
+        if [ "${FAILED:-0}" -gt 0 ]; then
+          echo "::error::OSPS Baseline assessment found ${FAILED} failed control(s)"
+          exit 1
+        fi
 
     - name: Cleanup temporary config file
       shell: bash
