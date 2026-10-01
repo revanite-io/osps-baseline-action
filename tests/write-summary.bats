@@ -4,17 +4,19 @@ setup() {
   SCRIPT="$BATS_TEST_DIRNAME/../scripts/write-summary.sh"
   RESULTS_DIR="$(mktemp -d)"
   GITHUB_STEP_SUMMARY="$(mktemp)"
+  GITHUB_OUTPUT="$(mktemp)"
   export OWNER="test-owner"
   export REPO="test-repo"
   export CATALOG="osps-baseline-2026-02"
-  export FAIL_ON_ERROR="false"
   export GITHUB_STEP_SUMMARY
+  export GITHUB_OUTPUT
   export RESULTS_DIR
 }
 
 teardown() {
   rm -rf "$RESULTS_DIR"
   rm -f "$GITHUB_STEP_SUMMARY"
+  rm -f "$GITHUB_OUTPUT"
 }
 
 @test "exits 1 when no log file is found in results directory" {
@@ -64,19 +66,7 @@ EOF
   [ "$status" -eq 0 ]
 }
 
-@test "exits 1 when FAILED controls exist and fail-on-error is true" {
-  export FAIL_ON_ERROR="true"
-  cat > "$RESULTS_DIR/run.log" <<'EOF'
-2026-01-01T00:00:00Z [INFO]  OSPS-AC-01.01: access control enabled
-2026-01-01T00:00:01Z [ERROR] OSPS-AC-01.02: mfa not enforced
-> pvtr_osps-baseline-2026-02: 1 Passed, 0 Warnings, 1 Failed, 0 Possible
-EOF
-  run bash "$SCRIPT"
-  [ "$status" -eq 1 ]
-}
-
-@test "exits 0 when FAILED controls exist but fail-on-error is false" {
-  export FAIL_ON_ERROR="false"
+@test "exits 0 when FAILED controls exist so later steps still run" {
   cat > "$RESULTS_DIR/run.log" <<'EOF'
 2026-01-01T00:00:00Z [INFO]  OSPS-AC-01.01: access control enabled
 2026-01-01T00:00:01Z [ERROR] OSPS-AC-01.02: mfa not enforced
@@ -84,6 +74,25 @@ EOF
 EOF
   run bash "$SCRIPT"
   [ "$status" -eq 0 ]
+}
+
+@test "writes the failed control count to GITHUB_OUTPUT" {
+  cat > "$RESULTS_DIR/run.log" <<'EOF'
+2026-01-01T00:00:00Z [INFO]  OSPS-AC-01.01: access control enabled
+2026-01-01T00:00:01Z [ERROR] OSPS-AC-01.02: mfa not enforced
+> pvtr_osps-baseline-2026-02: 1 Passed, 0 Warnings, 1 Failed, 0 Possible
+EOF
+  run bash "$SCRIPT"
+  grep -qx "failed=1" "$GITHUB_OUTPUT"
+}
+
+@test "writes failed=0 to GITHUB_OUTPUT when all controls pass" {
+  cat > "$RESULTS_DIR/run.log" <<'EOF'
+2026-01-01T00:00:00Z [INFO]  OSPS-AC-01.01: access control enabled
+> pvtr_osps-baseline-2026-02: 1 Passed, 0 Warnings, 0 Failed, 0 Possible
+EOF
+  run bash "$SCRIPT"
+  grep -qx "failed=0" "$GITHUB_OUTPUT"
 }
 
 @test "summary table is written with passing control results" {
