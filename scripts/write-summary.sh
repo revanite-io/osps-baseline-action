@@ -60,10 +60,11 @@ fi
 # Extract the summary line (e.g. "pvtr_osps-baseline: 16 Passed, 0 Warnings, 0 Failed, 40 Possible")
 SUMMARY_LINE=$(grep '> pvtr_' "$LOG_FILE" | sed 's/.*> //' || true)
 
-# Parse counts from the summary line
-PASSED=$(echo "$SUMMARY_LINE" | sed -n 's/.*\([0-9][0-9]*\) Passed.*/\1/p')
-WARNINGS=$(echo "$SUMMARY_LINE" | sed -n 's/.*\([0-9][0-9]*\) Warnings.*/\1/p')
-FAILED=$(echo "$SUMMARY_LINE" | sed -n 's/.*\([0-9][0-9]*\) Failed.*/\1/p')
+# Parse counts from the summary line. [^0-9] stops the greedy .* from
+# swallowing leading digits, so "14 Passed" parses as 14, not 4.
+PASSED=$(echo "$SUMMARY_LINE" | sed -n 's/.*[^0-9]\([0-9][0-9]*\) Passed.*/\1/p')
+WARNINGS=$(echo "$SUMMARY_LINE" | sed -n 's/.*[^0-9]\([0-9][0-9]*\) Warnings.*/\1/p')
+FAILED=$(echo "$SUMMARY_LINE" | sed -n 's/.*[^0-9]\([0-9][0-9]*\) Failed.*/\1/p')
 PASSED=${PASSED:-0}
 WARNINGS=${WARNINGS:-0}
 FAILED=${FAILED:-0}
