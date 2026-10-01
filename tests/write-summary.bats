@@ -95,6 +95,24 @@ EOF
   grep -qx "failed=0" "$GITHUB_OUTPUT"
 }
 
+@test "summary table shows full multi-digit counts" {
+  cat > "$RESULTS_DIR/run.log" <<'EOF'
+2026-01-01T00:00:00Z [ERROR] OSPS-AC-01.02: mfa not enforced
+> pvtr_osps-baseline-2026-02: 14 Passed, 3 Warnings, 12 Failed, 41 Possible
+EOF
+  run bash "$SCRIPT"
+  grep -qF "| 14 | 3 | 12 |" "$GITHUB_STEP_SUMMARY"
+}
+
+@test "writes a multi-digit failed control count to GITHUB_OUTPUT" {
+  cat > "$RESULTS_DIR/run.log" <<'EOF'
+2026-01-01T00:00:00Z [ERROR] OSPS-AC-01.02: mfa not enforced
+> pvtr_osps-baseline-2026-02: 14 Passed, 3 Warnings, 12 Failed, 41 Possible
+EOF
+  run bash "$SCRIPT"
+  grep -qx "failed=12" "$GITHUB_OUTPUT"
+}
+
 @test "summary table is written with passing control results" {
   cat > "$RESULTS_DIR/run.log" <<'EOF'
 2026-01-01T00:00:00Z [INFO]  OSPS-AC-01.01: access control enabled
