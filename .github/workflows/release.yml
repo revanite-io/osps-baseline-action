@@ -17,7 +17,7 @@ jobs:
       id-token: write       # OIDC token for build provenance attestations
       attestations: write   # Write build provenance attestations
       discussions: write    # Create release announcement discussion (if configured)
-    uses: github-community-projects/ospo-reusable-workflows/.github/workflows/release.yaml@a48c75fafbf2513929ff2ce06dfaa38247ddc50b
+    uses: github-community-projects/ospo-reusable-workflows/.github/workflows/release.yaml@690dbbefe65f0c1d68c5211dd6ff997f533099b5
     with:
       publish: true
       release-config-name: release-drafter.yml
