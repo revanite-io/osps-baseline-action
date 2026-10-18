@@ -5,7 +5,8 @@ set -euo pipefail
 #
 # Finds the SARIF file in the results directory, optionally filters it down
 # to failed controls only (error-level results), and writes the sarif_file
-# and should_upload step outputs consumed by the upload step.
+# step output consumed by the upload step. The output is empty when there is
+# nothing to upload.
 #
 # A SARIF file with zero results is still uploaded: GitHub closes an alert only
 # when a newer analysis in the same category no longer reports it, so skipping
@@ -19,30 +20,27 @@ set -euo pipefail
 RESULTS_DIR="${RESULTS_DIR:-evaluation_results}"
 SARIF_ONLY_FAILURES="${SARIF_ONLY_FAILURES:-true}"
 
-write_outputs() {
-  {
-    echo "sarif_file=$1"
-    echo "should_upload=$2"
-  } >> "$GITHUB_OUTPUT"
+write_output() {
+  echo "sarif_file=$1" >> "$GITHUB_OUTPUT"
 }
 
 SARIF_FILE=$(find "$RESULTS_DIR" -name "*.sarif" -type f 2>/dev/null | head -1)
 
 if [ -z "$SARIF_FILE" ] || [ ! -f "$SARIF_FILE" ]; then
   echo "⚠️  No SARIF file found in ${RESULTS_DIR} directory"
-  write_outputs "" "false"
+  write_output ""
   exit 0
 fi
 
 if ! TOTAL_COUNT=$(jq '[.runs[]?.results[]?] | length' "$SARIF_FILE" 2>/dev/null); then
   echo "⚠️  SARIF file ${SARIF_FILE} is not valid JSON. Skipping upload."
-  write_outputs "" "false"
+  write_output ""
   exit 0
 fi
 
-if [ "$(jq '.runs // [] | length' "$SARIF_FILE")" -eq 0 ]; then
+if [ "$(jq 'if (.runs | type) == "array" then (.runs | length) else 0 end' "$SARIF_FILE")" -eq 0 ]; then
   echo "⚠️  SARIF file ${SARIF_FILE} contains no runs. Skipping upload."
-  write_outputs "" "false"
+  write_output ""
   exit 0
 fi
 
@@ -58,7 +56,7 @@ if [ "$SARIF_ONLY_FAILURES" = "true" ]; then
   echo "Filtered SARIF to failed controls only: kept ${RESULT_COUNT} of ${TOTAL_COUNT} result(s)"
 else
   RESULT_COUNT=$TOTAL_COUNT
-  if [ "$(jq '[.runs[] | select(has("results") | not)] | length' "$SARIF_FILE")" -gt 0 ]; then
+  if [ "$(jq '[.runs[] | select(.results == null)] | length' "$SARIF_FILE")" -gt 0 ]; then
     # Give every run an explicit results array so an empty run still reads as "no findings".
     NORMALIZED_FILE="${SARIF_FILE%.sarif}.normalized.sarif"
     jq '.runs = (.runs | map(.results = (.results // [])))' "$SARIF_FILE" > "$NORMALIZED_FILE"
@@ -73,4 +71,4 @@ elif [ "$SARIF_ONLY_FAILURES" = "true" ]; then
 else
   echo "✅ No results. Uploading an empty SARIF so GitHub closes alerts from earlier scans."
 fi
-write_outputs "$SARIF_FILE" "true"
+write_output "$SARIF_FILE"

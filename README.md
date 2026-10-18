@@ -109,7 +109,7 @@ The scanner marks controls it cannot fully verify as "Needs Review" and re-emits
 
 For that reason, by default (`sarif-only-failures: true`) only failed controls are uploaded to the Security tab. Failed-control alerts open when a control fails and auto-close once a later scan no longer reports the failure. "Needs Review" and passed controls remain in the workflow step summary and in the `evaluation_results` output files.
 
-If no controls failed, nothing is uploaded (GitHub rejects SARIF uploads with zero results) and the workflow summary is the place to review the assessment.
+If no controls failed, the action still uploads a SARIF file with zero results. GitHub closes an alert only when a later analysis in the same category no longer reports it, so skipping clean scans would leave previously failed controls open. The workflow summary is the place to review the full assessment.
 
 Avoid dismissing "Needs Review" alerts from older uploads: the results carry no fingerprints, so a dismissed alert can mask a later genuine failure of the same control. Set `sarif-only-failures: false` to restore the old upload-everything behavior.
 
